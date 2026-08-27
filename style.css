@@ -880,53 +880,74 @@ div:has(#jarvis-user-input) {
     transform: translate(-50%, -50%) !important;
 }
 /* ==========================================================================
-   REAJUSTE ELASTICO ANTI-CORTE: PANTALLA PRINCIPAL
+   BLINDAJE ANTICORTE DEFINITIVO (DISEÑO ELÁSTICO FLEX)
    ========================================================================== */
 
-/* 1. Ajustamos la altura de la pantalla restando el espacio exacto del menú */
+/* 1. Quitamos los altos fijos invasivos y dejamos que el contenedor se adapte al móvil */
+.app-screen.active,
 #screen-dias.active {
     display: flex !important;
     flex-direction: column !important;
     height: calc(100vh - 100px) !important;
-    justify-content: space-between !important; /* Distribuye el espacio sobrante equitativamente */
+    max-height: calc(100vh - 100px) !important;
+    justify-content: space-between !important; /* Distribuye el espacio y clava el menú abajo */
     padding: 10px 15px 5px 15px !important;
     box-sizing: border-box !important;
+    overflow: hidden !important; /* Impide que la pantalla principal haga scroll general */
 }
 
-/* 2. Reducimos el radar de 250px a 210px para ganar 40 píxeles vitales de espacio vertical */
+/* 2. Reducimos el radar a un tamaño más compacto para asegurar que quepa el menú */
+.tactical-radar-zone {
+    margin: 5px 0 !important; /* Reducimos los márgenes verticales al mínimo */
+    flex: 1 !important; /* Permite al radar encogerse elásticamente si la pantalla es pequeña */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
 .tactical-radar-zone .canvas-container {
-    width: 210px !important;
-    height: 210px !important;
+    width: 190px !important; /* Tamaño óptimo para pantallas compactas y barras de navegador */
+    height: 190px !important;
 }
 
 .tactical-radar-zone .canvas-container > .neon-circle-img {
-    width: 210px !important;
-    height: 210px !important;
+    width: 190px !important;
+    height: 190px !important;
 }
 
-/* 3. Reubicamos el nodo amarillo de forma proporcional al nuevo tamaño */
+/* 3. Reajuste proporcional de los nodos sobre el nuevo tamaño del círculo */
 .radar-node {
-    bottom: 25px !important;
-    left: -10px !important;
+    bottom: 20px !important;
+    left: -8px !important;
 }
 
-/* 4. Reubicamos la rueda rosa de forma proporcional al nuevo tamaño */
 .mini-canvas-pink {
     bottom: -5px !important;
-    right: -25px !important;
-    width: 85px !important;
-    height: 85px !important;
+    right: -20px !important;
+    width: 75px !important;
+    height: 75px !important;
 }
 
 .mini-canvas-pink .neon-circle-img {
-    width: 85px !important;
-    height: 85px !important;
+    width: 75px !important;
+    height: 75px !important;
 }
 
-/* 5. Aseguramos que la barra de iconos inferior se quede fija en la base y no se corte */
+/* 4. El bocadillo de JARVIS reduce sus márgenes para no empujar la navegación */
+.jarvis-speech-bubble {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    padding: 10px 15px !important; /* Más compacto en vertical */
+}
+
+/* 5. ANCLAJE MAGNÉTICO DE LA BARRA INFERIOR */
 .bottom-navigation {
     width: 100% !important;
-    margin-top: auto !important; /* Actúa como imán hacia el fondo absoluto de la pantalla */
-    transform: translateY(0) !important; /* Eliminamos desfases de posición anteriores */
-    padding-bottom: 12px !important; /* Pequeño margen de seguridad para la base del móvil */
+    max-width: 400px !important;
+    position: relative !important;
+    bottom: 0 !important;
+    margin-top: auto !important; /* Empuja con fuerza el menú al fondo absoluto */
+    padding-bottom: 15px !important; /* Margen de seguridad para no chocar con la barra de gestos del móvil */
+    background-color: #121212 !important; /* Fondo sólido para que no se transparente nada por detrás */
 }
+
