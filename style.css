@@ -880,74 +880,43 @@ div:has(#jarvis-user-input) {
     transform: translate(-50%, -50%) !important;
 }
 /* ==========================================================================
-   BLINDAJE ANTICORTE DEFINITIVO (DISEÑO ELÁSTICO FLEX)
+   ANCLAJE DE SEGURIDAD PARA PANTALLAS MÓVILES (ESTÁNDAR SVH)
    ========================================================================== */
 
-/* 1. Quitamos los altos fijos invasivos y dejamos que el contenedor se adapte al móvil */
-.app-screen.active,
-#screen-dias.active {
+/* 1. Forzamos al cuerpo general de la app a medir exactamente el alto visible del móvil */
+body {
+    height: 100svh !important; /* 🚀 Corta el alto exacto ignorando las barras de Chrome */
+    min-height: 100svh !important;
+    max-height: 100svh !important;
+    overflow: hidden !important; /* Prohibido el scroll fantasma hacia abajo */
     display: flex !important;
     flex-direction: column !important;
-    height: calc(100vh - 100px) !important;
-    max-height: calc(100vh - 100px) !important;
-    justify-content: space-between !important; /* Distribuye el espacio y clava el menú abajo */
-    padding: 10px 15px 5px 15px !important;
-    box-sizing: border-box !important;
-    overflow: hidden !important; /* Impide que la pantalla principal haga scroll general */
+    justify-content: space-between !important;
+    padding: 10px 15px !important;
 }
 
-/* 2. Reducimos el radar a un tamaño más compacto para asegurar que quepa el menú */
-.tactical-radar-zone {
-    margin: 5px 0 !important; /* Reducimos los márgenes verticales al mínimo */
-    flex: 1 !important; /* Permite al radar encogerse elásticamente si la pantalla es pequeña */
+/* 2. Redimensionamos la altura de las pantallas de la app */
+.app-screen.active,
+#screen-dias.active {
+    flex: 1 !important;
+    height: auto !important;
+    max-height: calc(100svh - 90px) !important; /* Deja el hueco exacto para los iconos */
     display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
 }
 
-.tactical-radar-zone .canvas-container {
-    width: 190px !important; /* Tamaño óptimo para pantallas compactas y barras de navegador */
-    height: 190px !important;
-}
-
-.tactical-radar-zone .canvas-container > .neon-circle-img {
-    width: 190px !important;
-    height: 190px !important;
-}
-
-/* 3. Reajuste proporcional de los nodos sobre el nuevo tamaño del círculo */
-.radar-node {
-    bottom: 20px !important;
-    left: -8px !important;
-}
-
-.mini-canvas-pink {
-    bottom: -5px !important;
-    right: -20px !important;
-    width: 75px !important;
-    height: 75px !important;
-}
-
-.mini-canvas-pink .neon-circle-img {
-    width: 75px !important;
-    height: 75px !important;
-}
-
-/* 4. El bocadillo de JARVIS reduce sus márgenes para no empujar la navegación */
-.jarvis-speech-bubble {
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
-    padding: 10px 15px !important; /* Más compacto en vertical */
-}
-
-/* 5. ANCLAJE MAGNÉTICO DE LA BARRA INFERIOR */
+/* 3. CLAVAMOS LA BARRA AL FONDO ABSOLUTO */
 .bottom-navigation {
+    position: fixed !important; /* 📌 Se despega del flujo y se clava como un imán */
+    bottom: 0 !important;      /* Pegada al borde físico inferior de la pantalla */
+    left: 50% !important;
+    transform: translateX(-50%) !important; /* La centra perfectamente en horizontal */
     width: 100% !important;
     max-width: 400px !important;
-    position: relative !important;
-    bottom: 0 !important;
-    margin-top: auto !important; /* Empuja con fuerza el menú al fondo absoluto */
-    padding-bottom: 15px !important; /* Margen de seguridad para no chocar con la barra de gestos del móvil */
-    background-color: #121212 !important; /* Fondo sólido para que no se transparente nada por detrás */
+    background-color: #121212 !important; /* Fondo opaco para que no se transparente el fondo */
+    z-index: 9999 !important; /* Por encima de cualquier radar, bocadillo o tarjeta */
+    padding-bottom: 12px !important; /* Margen de cortesía para la barra de gestos del móvil */
+    border-top: 2px solid #333333 !important;
 }
 
