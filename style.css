@@ -814,3 +814,68 @@ div:has(#jarvis-user-input) {
         transform: translateY(0);
     }
 }
+/* ==========================================================================
+   REPARACIÓN DE RADAR CENTRAL (AJUSTE MÓVIL XIAOMI)
+   ========================================================================== */
+
+/* 1. Aseguramos que el contenedor del radar respire bien y tenga espacio abajo */
+.tactical-radar-zone {
+    margin: 20px 0 35px 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+/* 2. Forzamos un tamaño rígido y cuadrado al contenedor para que no colapse */
+.tactical-radar-zone .canvas-container {
+    width: 250px !important;
+    height: 250px !important;
+    position: relative !important;
+}
+
+/* 3. Bloqueamos la imagen del círculo azul grande para que conserve sus proporciones redondas */
+.tactical-radar-zone .canvas-container > .neon-circle-img {
+    width: 250px !important;
+    height: 250px !important;
+    object-fit: contain !important; /* Evita que la imagen se estire o se aplaste */
+}
+
+/* 4. Centramos milimétricamente el número 0 de la racha en el núcleo */
+.tactical-radar-zone .streak-counter {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 2 !important;
+}
+
+/* 5. Ajustamos el nodo amarillo para que se mantenga pegado al borde del círculo azul */
+.radar-node {
+    position: absolute !important;
+    bottom: 35px !important; 
+    left: -5px !important;
+}
+
+/* 6. Corregimos la rueda rosa pequeña para que no se deforme y mantenga su tamaño */
+.mini-canvas-pink {
+    position: absolute !important;
+    bottom: 0px !important; 
+    right: -25px !important;
+    width: 90px !important;
+    height: 90px !important;
+}
+
+.mini-canvas-pink .neon-circle-img {
+    width: 90px !important;
+    height: 90px !important;
+    object-fit: contain !important;
+}
+
+/* 7. Centramos el texto de los pasos dentro de la mini rueda rosa */
+.mini-canvas-pink .streak-counter {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+}
