@@ -919,4 +919,87 @@ body {
     padding-bottom: 12px !important; /* Margen de cortesía para la barra de gestos del móvil */
     border-top: 2px solid #333333 !important;
 }
+/* ==========================================================================
+   REPARACIÓN UNIFICADA DE ALTURAS PARA PANTALLAS COMPACTAS
+   ========================================================================== */
+
+/* 1. Obligamos al cuerpo a ocupar el espacio total visible, estructurado en columna */
+body {
+    height: 100svh !important;
+    min-height: 100svh !important;
+    max-height: 100svh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 0 !important; /* Eliminamos paddings invasivos */
+    margin: 0 !important;
+    overflow: hidden !important;
+}
+
+/* 2. El contenedor de pantallas absorbe todo el espacio restante SIN pisar el menú */
+.app-screen.active,
+#screen-dias.active,
+#screen-jarvis.active {
+    flex: 1 !important; /* Crecimiento dinámico */
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 15px 15px 10px 15px !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important; /* Si falta espacio, la pantalla interna respira con scroll */
+}
+
+/* 3. Reajuste elástico del Radar y bocadillo de la Pantalla 1 para que entren enteros */
+.tactical-radar-zone {
+    flex: 0 1 auto !important;
+    margin: 5px 0 !important;
+}
+.tactical-radar-zone .canvas-container {
+    width: 170px !important; /* Reducción milimétrica táctica de seguridad */
+    height: 170px !important;
+}
+.tactical-radar-zone .canvas-container > .neon-circle-img {
+    width: 170px !important;
+    height: 170px !important;
+}
+.radar-node { bottom: 18px !important; left: -6px !important; }
+.mini-canvas-pink { bottom: -5px !important; right: -15px !important; width: 70px !important; height: 70px !important; }
+.mini-canvas-pink .neon-circle-img { width: 70px !important; height: 70px !important; }
+
+.jarvis-speech-bubble {
+    margin: 5px 0 !important;
+    padding: 10px 12px !important;
+    flex-shrink: 0 !important; /* Impide que el móvil mutile el bocadillo */
+}
+
+/* 4. Aseguramos el muelle inferior en los chats e inputs de las pantallas 2 y 3 */
+.chat-transmission-feed {
+    flex: 1 !important;
+    height: auto !important;
+}
+.command-input-zone,
+#misiones-botonera-fija {
+    margin-top: auto !important;
+    margin-bottom: 10px !important;
+    flex-shrink: 0 !important;
+}
+
+/* 5. ANCLAJE MACIZO Y ESTÁTICO DE LA BARRA INFERIOR */
+.bottom-navigation {
+    position: relative !important; /* 🚀 Deja de flotar: ahora es un bloque sólido en la base */
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 70px !important;
+    background-color: #0c0c0c !important;
+    border-top: 2px solid #222222 !important;
+    padding-bottom: env(safe-area-inset-bottom, 10px) !important; /* Amortiguación para gestos de Android/iOS */
+    flex-shrink: 0 !important; /* Prohibido encogerse */
+    display: flex !important;
+    align-items: center !important;
+}
 
