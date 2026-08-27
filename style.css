@@ -1,0 +1,729 @@
+/* ==========================================================================
+   1. REGISTRO DE FUENTES
+   ========================================================================== */
+   @font-face {
+    font-family: 'Space Age';
+    src: url('Fuentes/space age.ttf') format('truetype'); 
+    font-weight: normal; font-style: normal;
+}
+@font-face {
+    font-family: 'Cyborg Punk';
+    src: url('Fuentes/Cyborg Punk.ttf') format('truetype');
+    font-weight: normal; font-style: normal;
+}
+
+/* ==========================================================================
+   2. CONFIGURACIÓN GENERAL Y ESTILOS DE PANTALLA
+   ========================================================================== */
+* {
+    box-sizing: border-box; margin: 0; padding: 0;
+    font-family: 'Space Age', sans-serif;
+}
+body {
+    background-color: #121212; color: #ffffff;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; padding: 20px; overflow: hidden;
+}
+.header-text {
+    align-self: flex-start; font-size: 0.8rem; color: #666666;
+    letter-spacing: 1px; margin-bottom: 10px;
+}
+h1 {
+    font-size: 2.2rem; font-weight: normal; margin-bottom: 30px; text-align: center;
+    filter: drop-shadow(0 0 2px #2288ff) drop-shadow(0 0 16px #2288ff) brightness(1.2);
+}
+
+/* ==========================================================================
+   3. PANTALLA PRINCIPAL: EL CASI-CÍRCULO Y EL BOCADILLO JARVIS
+   ========================================================================== */
+.canvas-container {
+    position: relative; 
+    width: 250px; 
+    height: 250px;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    margin: 0; /* Eliminado el margen fijo de 40px para evitar que empuje los elementos hacia arriba */
+}
+
+.neon-circle-img {
+    position: absolute; 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain;
+    filter: drop-shadow(0 0 6px #2288ff) drop-shadow(0 0 16px #2288ff) brightness(1.2);
+}
+
+.streak-counter {
+    font-size: 3rem; 
+    font-weight: bold;
+    font-family: 'Cyborg Punk', sans-serif; 
+    color: #ffffff; 
+    z-index: 2;
+}
+
+/* RECALIBRACIÓN NEUMÁTICA: Añadimos el margen inferior para separar el bocadillo de la línea */
+.jarvis-speech-bubble {
+    background-color: #2a2a2a; 
+    border-radius: 20px; 
+    padding: 15px 20px;
+    width: 100%; 
+    max-width: 360px; 
+    display: flex; 
+    align-items: center; 
+    gap: 15px;
+    position: relative; 
+    margin-top: auto !important; /* Mantiene el empuje hacia abajo */
+    margin-bottom: 20px !important; /* MODIFICADO: Crea un margen limpio de 20px sobre la línea gris */
+}
+
+.jarvis-speech-bubble::after {
+    content: ''; 
+    position: absolute; 
+    bottom: -10px; 
+    left: 50%;
+    transform: translateX(-50%); 
+    border-width: 10px 10px 0;
+    border-style: solid; 
+    border-color: #2a2a2a transparent; 
+    display: block; 
+    width: 0;
+}
+
+.bubble-icon {
+    width: 60px; 
+    height: 60px; 
+    object-fit: contain;
+    filter: drop-shadow(0 0 1px #2288ff) drop-shadow(0 0 6px #2288ff) brightness(1.2);
+}
+
+.bubble-text {
+    font-family: sans-serif !important; 
+    font-size: 0.95rem;
+    color: #dddddd; 
+    line-height: 1.4; 
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   4. NAVEGACIÓN INFERIOR
+   ========================================================================== */
+.bottom-navigation {
+    width: 100%; max-width: 400px; display: flex; justify-content: space-around;
+    border-top: 2px solid #333333; padding-top: 15px; padding-bottom: 10px;
+}
+.nav-slot {
+    background: transparent; border: none; width: 60px; height: 60px;
+    display: flex; justify-content: center; align-items: center; cursor: pointer;
+}
+.nav-slot img { width: 80px; height: 80px; object-fit: contain; filter: opacity(0.4); }
+.nav-slot.active img { filter: opacity(5) drop-shadow(0 0 2px #f0feff); }
+
+/* ==========================================================================
+   5. CONTROL TÁCTICO DE MISIONES Y SCROLL MAGNÉTICO (XIAOMI CALIBRATION)
+   ========================================================================= */
+.app-screen { 
+    display: none; 
+    width: 100%; 
+    flex-direction: column; 
+    align-items: center; 
+}
+
+/* REPARACIÓN RADICAL: Forzamos la flotación del bocadillo metiendo un colchón en la base */
+.app-screen.active { 
+    display: flex !important; 
+    width: 100%; 
+    max-width: 400px; 
+    height: calc(100vh - 140px) !important;
+    flex-direction: column !important;
+    justify-content: flex-start; 
+    padding: 10px 15px 35px 15px !important; /* MODIFICADO: Cambiado de 5px a 35px abajo para inflar el hueco negro */
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* Forzamos un empuje controlado debajo del radar para mandar el bocadillo abajo */
+.tactical-radar-zone {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0 50px 0; /* MODIFICADO: Este 50px final empuja el bocadillo hacia la base del móvil */
+    position: relative;
+}
+
+.mission-header-zone {
+    width: 100%; display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 25px; padding: 0 5px;
+}
+.mission-header-zone h1 { margin-bottom: 0; text-align: left; }
+.config-trigger-btn { background: transparent; border: none; cursor: pointer; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; }
+.config-icon-img { width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 0 3px #2288ff); }
+
+
+/* ==========================================================================
+   ANCLAJE DE BOTÓN ENVIAR INFORME DE MISIÓN (PANTALLA 2 DEFINITIVA)
+   ========================================================================== */
+
+/* Forzamos el alto total de la pantalla restando el menú inferior */
+#screen-misiones.active {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100vh - 85px) !important;
+    box-sizing: border-box;
+}
+
+/* La zona de misiones se limita para dejar espacio libre abajo */
+.scroll-mission-zone {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-height: 440px !important; /* Candado estricto para que entren los retos magentas sin empujar el fondo */
+    overflow-y: auto !important;
+    box-sizing: border-box;
+    gap: 15px;
+}
+
+/* El casillero del botón se apoya con un muelle elástico en la base del Xiaomi */
+#misiones-botonera-fija {
+    margin-top: auto !important; /* Empuja el contenedor al fondo absoluto */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Forzamos al botón real de la botonera a tomar su tamaño estilizado */
+#misiones-botonera-fija button {
+    width: 100% !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    height: 48px !important;
+    margin-bottom: 25px !important; /* Separación limpia exacta sobre los iconos */
+}
+
+
+.mission-card {
+    background-color: #1a1a1a; width: 100%; min-height: 80px; border-radius: 12px; padding: 15px;
+    display: flex; justify-content: space-between; align-items: center; gap: 15px;
+    border: 1px solid #2a2a2a; transition: all 0.2s ease; scroll-snap-align: center; cursor: pointer;
+}
+.fixed-yellow { border-left: 4px solid #554400; margin-bottom: 15px; }
+.scroll-blue { border-left: 4px solid #002244; }
+.random-magenta { border-left: 4px solid #44002c; }
+
+.mission-info { display: flex; flex-direction: column; gap: 4px; }
+.mission-tag { font-size: 0.65rem; color: #666; letter-spacing: 1px; }
+.mission-text { font-family: sans-serif !important; font-size: 0.85rem; color: #dddddd; line-height: 1.3; }
+.tactical-divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, #333333, transparent); margin: 10px 0 20px 0; }
+
+
+/* ==========================================================================
+   6. INTERRUPTORES DE CHECK PERSONALIZADOS Y NEONES DIRECTOS
+   ========================================================================== */
+.custom-checkbox {
+    width: 32px; height: 32px; min-width: 32px; border-radius: 6px;
+    border: 2px solid #444444; background: transparent; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+}
+.custom-checkbox::after {
+    content: '✓'; font-family: sans-serif !important; font-weight: bold; font-size: 1.2rem; color: transparent;
+}
+
+.fixed-yellow.checked-active { border: 1px solid #ffcc00; border-left: 4px solid #ffcc00; box-shadow: 0 0 12px rgba(255, 204, 0, 0.4); }
+.fixed-yellow.checked-active .custom-checkbox { border-color: #ffcc00; }
+.fixed-yellow.checked-active .custom-checkbox::after { color: #ffcc00; text-shadow: 0 0 4px #ffcc00; }
+
+.scroll-blue.checked-active { border: 1px solid #2288ff; border-left: 4px solid #2288ff; box-shadow: 0 0 12px rgba(34, 136, 255, 0.4); }
+.scroll-blue.checked-active .custom-checkbox { border-color: #2288ff; }
+.scroll-blue.checked-active .custom-checkbox::after { color: #2288ff; text-shadow: 0 0 4px #2288ff; }
+
+.random-magenta.checked-active { border: 1px solid #ff00aa; border-left: 4px solid #ff00aa; box-shadow: 0 0 12px rgba(255, 0, 170, 0.4); }
+.random-magenta.checked-active .custom-checkbox { border-color: #ff00aa; }
+.random-magenta.checked-active .custom-checkbox::after { color: #ff00aa; text-shadow: 0 0 4px #ff00aa; }
+
+/* ==========================================================================
+   7. INTERFAZ DE PANELES FLOTANTES (MODALS)
+   ========================================================================== */
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8); z-index: 10; justify-content: center; align-items: center;
+}
+.modal-overlay.open { display: flex; }
+.tactical-modal {
+    background-color: #1e1e1e; width: 90%; max-width: 360px; border: 1px solid #2288ff;
+    box-shadow: 0 0 20px rgba(34, 136, 255, 0.3); border-radius: 16px; padding: 25px; display: flex; flex-direction: column; gap: 20px;
+}
+.modal-title { font-size: 1rem; color: #2288ff; letter-spacing: 1px; text-align: center; }
+.type-btn {
+    background-color: #121212; border: 1px solid #333; color: #666; padding: 8px; border-radius: 8px;
+    cursor: pointer; font-size: 0.75rem; transition: all 0.2s;
+}
+.modal-actions { display: flex; justify-content: space-between; gap: 15px; }
+.action-btn { flex: 1; padding: 12px; border-radius: 8px; cursor: pointer; background: transparent; border: 1px solid #333; font-size: 0.85rem; }
+.cancel-btn { color: #666; }
+.deploy-btn { color: #2288ff; border-color: #2288ff; }
+#delete-mission-btn:hover { border-color: #ff3333 !important; background-color: rgba(255, 51, 51, 0.1); box-shadow: 0 0 8px rgba(255, 51, 51, 0.4); }
+/* ==========================================================================
+   9. MAQUETACIÓN DE LA TERMINAL DE CHAT J.A.R.V.I.S.
+   ========================================================================== */
+
+/* Zona del avatar: centra tu dibujo arriba */
+.jarvis-avatar-zone {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    height: 90px;
+}
+
+/* Animación cíclica de respiración/pulsación neón para tu icono central */
+.jarvis-core-pulse {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 6px #2288ff) drop-shadow(0 0 15px #2288ff) brightness(1.2);
+    animation: pulsoHolograma 3s infinite ease-in-out;
+}
+
+@keyframes pulsoHolograma {
+    0% { transform: scale(1); filter: drop-shadow(0 0 4px #2288ff) drop-shadow(0 0 10px #2288ff) brightness(1); }
+    50% { transform: scale(1.06); filter: drop-shadow(0 0 8px #2288ff) drop-shadow(0 0 20px #2288ff) brightness(1.3); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 4px #2288ff) drop-shadow(0 0 10px #2288ff) brightness(1); }
+}
+
+/* El feed central donde se acumulan los bloques de texto */
+.chat-transmission-feed {
+    width: 100%;
+    height: 240px; /* Altura fija para que no tape la barra inferior */
+    overflow-y: auto; /* Scroll vertical independiente */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 5px;
+    margin-bottom: 15px;
+}
+
+/* Ocultamos la barra de scroll tosca para mantener la estética limpia */
+.chat-transmission-feed::-webkit-scrollbar {
+    display: none;
+}
+
+/* Los bloques rectangulares del chat estilo interfaz militar */
+.chat-block {
+    background-color: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 12px 16px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: border-color 0.2s;
+}
+
+/* El borde de la IA brilla sutilmente en tu azul claro neón */
+.jarvis-msg {
+    border-left: 4px solid #2288ff;
+}
+
+/* El borde de tus respuestas se verá blanco/gris táctico */
+.user-msg {
+    border-left: 4px solid #cccccc;
+}
+
+.chat-sender {
+    font-size: 0.7rem;
+    color: #666666;
+    letter-spacing: 1px;
+}
+
+.chat-text {
+    font-family: sans-serif !important; /* Fuente normal y limpia blindada para leer los consejos */
+    font-size: 0.85rem;
+    color: #dddddd;
+    line-height: 1.4;
+}
+
+/* FILA DE ATAJOS RÁPIDOS */
+.tactical-shortcuts-row {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.shortcut-btn {
+    flex: 1;
+    background-color: #121212;
+    border: 1px solid #333333;
+    color: #666666;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.shortcut-btn:hover {
+    border-color: #2288ff;
+    color: #ffffff;
+    box-shadow: 0 0 6px rgba(34, 136, 255, 0.2);
+}
+
+/* LA LÍNEA DE COMANDOS INFERIOR DE ENTRADA */
+.command-input-zone {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    margin-bottom: auto; /* Empuja el menú inferior abajo del todo de la pantalla */
+}
+
+.command-input-zone input[type="text"] {
+    flex: 1;
+    background-color: #1a1a1a;
+    border: 1px solid #333333;
+    border-radius: 8px;
+    padding: 12px;
+    color: #ffffff;
+    font-family: sans-serif !important; /* Letra normal y limpia para escribir cómodamente */
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.command-input-zone input[type="text"]:focus {
+    border-color: #2288ff;
+}
+
+.send-command-btn {
+    background: transparent;
+    border: 1px solid #2288ff;
+    color: #2288ff;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.send-command-btn:hover {
+    background-color: rgba(34, 136, 255, 0.05);
+    box-shadow: 0 0 10px rgba(34, 136, 255, 0.3);
+}
+/* Aplica un muelle de empuje vertical al contenedor de tu barra de escribir */
+.chat-input-zone {
+    margin-top: auto !important; /* Absorbe el espacio libre y empuja el bloque al fondo del móvil */
+    margin-bottom: 25px !important; /* Genera la separación limpia y exacta sobre tu menú de iconos */
+}
+/* ==========================================================================
+   10. INTERFAZ DE CINEMÁTICA DE INICIO (ONBOARDING TUTORIAL)
+   ========================================================================== */
+
+/* Bloqueo total de la pantalla de fondo */
+.onboarding-screen-lock {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000000;
+    z-index: 9999; /* Por encima de cualquier modal o menú inferior */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+/* Ocultar de forma limpia con transiciones */
+.onboarding-screen-lock.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Tarjeta militar centralizada */
+.onboarding-card {
+    background-color: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 12px;
+    padding: 24px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(34, 136, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.onboarding-title {
+    font-family: 'Space Age', sans-serif !important;
+    font-size: 0.85rem;
+    color: #2288ff;
+    letter-spacing: 2px;
+    text-align: center;
+    text-shadow: 0 0 5px rgba(34, 136, 255, 0.3);
+}
+
+/* Caja de texto fluido para el diálogo de Jarvis */
+.onboarding-text-feed {
+    font-family: sans-serif !important;
+    font-size: 0.85rem;
+    color: #dddddd;
+    line-height: 1.5;
+    min-height: 100px;
+    margin-bottom: 20px;
+    white-space: pre-line; /* Respeta los saltos de línea del script */
+}
+
+/* Fila de controles inferiores */
+.onboarding-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Botones de selección de identidad estilo ficha de personaje */
+.identity-select-btn {
+    width: 100%;
+    background-color: #121212;
+    border: 1px solid #2a2a2a;
+    color: #aaaaaa;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+.identity-select-btn:hover {
+    border-color: #2288ff;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(34, 136, 255, 0.2);
+    background-color: rgba(34, 136, 255, 0.02);
+}
+/* ==========================================================================
+   11. PANEL CENTRAL DE RADAR (COORDINADAS FIJAS MONITOR XIAOMI)
+   ========================================================================== */
+
+/* Contenedor base que centra el núcleo azul */
+.tactical-radar-zone {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: -15px 0 0 0; /* MODIFICADO: De 10px a -15px para succionar todos los círculos hacia arriba en bloque */
+    position: relative;
+}
+
+
+/* Forzamos que la caja central mida exactamente 250px de lado */
+.tactical-radar-zone .canvas-container {
+    position: relative;
+    width: 250px;
+    height: 250px;
+}
+
+/* Imagen del círculo azul grande central */
+.tactical-radar-zone .canvas-container > .neon-circle-img {
+    width: 250px !important;
+    height: 250px !important;
+}
+
+/* Tipografía del número de racha central */
+.tactical-radar-zone .streak-counter {
+    font-size: 3rem !important;
+}
+
+/* POSICIÓN NODO AMARILLO: Fijado milimétricamente abajo a la izquierda */
+.radar-node {
+    position: absolute;
+    bottom: 30px; /* Alineación vertical con la base del círculo azul */
+    left: -12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.2s ease;
+}
+
+.neon-node-yellow {
+    background-color: #ffcc00;
+    box-shadow: 0 0 8px #ffcc00, 0 0 18px #ffcc00;
+    border: 1px solid #ffffff;
+}
+
+.radar-node:hover {
+    transform: scale(1.2);
+}
+
+.inner-core-yellow {
+    width: 12px;
+    height: 12px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+/* POSICIÓN RUEDA ROSA: Fijado milimétricamente abajo a la derecha de forma simétrica */
+.mini-canvas-pink {
+    position: absolute;
+    bottom: -5px; /* Sube la rueda rosa para alinearla en el eje horizontal con el nodo amarillo */
+    right: -40px;
+    width: 100px !important;
+    height: 100px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.mini-canvas-pink .neon-circle-img {
+    width: 100px !important;
+    height: 100px !important;
+    position: absolute;
+}
+
+/* ESPEJADO Y ROTACIÓN DE MUESCA */
+.pink-mirrored-rotated {
+    transform: scaleX(-1) rotate(110deg);
+    filter: drop-shadow(0 0 5px #ff00aa) drop-shadow(0 0 15px #ff00aa) !important;
+}
+
+/* Centrado del texto de pasos dentro de la mini rueda rosa */
+.mini-canvas-pink .streak-counter {
+    position: relative;
+    font-size: 0.7rem !important;
+    color: #ff00aa;
+    text-shadow: 0 0 5px #ff00aa;
+    z-index: 11;
+    letter-spacing: 0px;
+}
+
+/* Efecto interactivo al pasar el cursor sobre la rueda rosa */
+.mini-canvas-pink:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+}
+/* ==========================================================================
+   RECALIBRACIÓN VERTICAL DEFINITIVA Y LIBERACIÓN DEL PICO (PANTALLA 1)
+   ========================================================================== */
+
+/* 1. Forzamos el alto estricto pero permitiendo que el pico sobresalga libremente */
+.app-screen.active {
+    flex: 1 !important;
+    height: calc(100vh - 160px) !important;
+    max-height: calc(100vh - 160px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    padding: 10px 15px 5px 15px !important;
+    box-sizing: border-box;
+    
+    /* LA CLAVE: Cambiado de hidden a visible para que el pico NO se corte */
+    overflow: visible !important; 
+}
+
+/* 2. El bocadillo de JARVIS recupera su aspecto original limpio y desciende al máximo */
+.jarvis-speech-bubble {
+    background-color: #2a2a2a; 
+    border-radius: 20px; 
+    padding: 15px 20px;
+    width: 100%; 
+    max-width: 360px; 
+    display: flex; 
+    align-items: center; 
+    gap: 15px;
+    
+    position: relative !important; 
+    margin-top: auto !important; 
+    margin-bottom: 12px !important; 
+    
+    /* NUEVO: Cohete inversor sutil para forzar la bajada final de 8 píxeles */
+    top: 8px !important; 
+    
+    border: none !important; 
+    box-shadow: none !important; 
+}
+
+
+/* 3. Aseguramos que el triángulo original tenga prioridad absoluta de capa */
+.jarvis-speech-bubble::after {
+    content: '' !important; 
+    position: absolute !important; 
+    bottom: -10px !important; 
+    left: 50% !important;
+    transform: translateX(-50%) !important; 
+    border-width: 10px 10px 0 !important;
+    border-style: solid !important; 
+    border-color: #2a2a2a transparent transparent transparent !important; 
+    display: block !important; 
+    width: 0 !important;
+    z-index: 99 !important; /* Lo saca por encima del corte inferior */
+}
+
+/* 4. Forzamos a tu barra inferior real a bajar hacia la base del móvil */
+.bottom-navigation {
+    transform: translateY(22px) !important; /* Mantiene tus iconos estables abajo */
+}
+/* ==========================================================================
+   CÁPSULAS DIVISORIAS DE FECHA ESTILO WHATSAPP (CHAT JARVIS)
+   ========================================================================== */
+.chat-date-separator {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 15px 0;
+}
+
+.chat-date-separator span {
+    background-color: #1c1c1e; /* Gris oscuro WhatsApp */
+    color: #8e8e93; /* Letras atenuadas tácticas */
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    border-radius: 8px;
+    border: 1px solid #2c2c2e;
+    text-transform: uppercase;
+}
+/* ==========================================================================
+   ALINEACIÓN DE FECHAS WHATSAPP Y AJUSTE DE BASE TÁCTICA
+   ========================================================================== */
+
+/* 1. Forzamos al contenedor del chat a ordenar las cápsulas de fecha en el centro */
+#chat-messages-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px;
+}
+
+/* 2. Forzamos la visibilidad y centrado real de la cápsula de fecha */
+.chat-date-separator {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin: 10px 0 !important;
+}
+
+/* 3. Descendemos la barra de entrada y el botón a la base exacta del Xiaomi */
+/* Esto los despega del chat y los posiciona a pocos píxeles de tus iconos */
+.chat-input-zone, 
+#screen-chat .chat-input-zone,
+div:has(#jarvis-user-input) {
+    margin-top: auto !important; /* Muelle neumático que vacía el aire de arriba */
+    margin-bottom: 5px !important; /* Candado: los deja a un suspiro de la línea inferior */
+    position: relative !important;
+    bottom: 0px !important;
+}

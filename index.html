@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero Training</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+     <!-- ==========================================================================
+       PANTALLA DE PROTOCOLO DE INICIO: BIENVENIDA Y CALIBRACIÓN DE J.A.R.V.I.S.
+       ========================================================================== -->
+    <div id="onboarding-overlay" class="onboarding-screen-lock">
+        <div class="onboarding-card">
+            <!-- Título de carga militar -->
+            <div class="onboarding-title" id="onboarding-header">INICIANDO SITEMAS S.H.I.E.L.D.</div>
+            
+            <div class="tactical-divider" style="margin: 15px 0;"></div>
+            
+            <!-- Ventana de texto fluido donde Jarvis te hablará letra a letra -->
+            <div class="onboarding-text-feed" id="onboarding-text-box">
+                Estableciendo enlace cuántico con la terminal...
+            </div>
+            
+            <!-- Fila de botones de acción que aparecerán en el momento preciso -->
+            <div class="onboarding-actions" id="onboarding-buttons-zone" style="display: none;">
+                <!-- Los botones dinámicos (Continuar o Selección de credenciales) se inyectarán aquí -->
+            </div>
+        </div>
+    </div>
+
+    <!-- TEXTO SUPERIOR DEL ENCABEZADO -->
+    <div class="header-text">SHIELD TACTICAL...</div>
+
+    <!-- ==========================================================================
+       PANTALLA 1: DÍAS EN ACTIVO (Se ve al arrancar la app)
+       ========================================================================== -->
+    <section id="screen-activo" class="app-screen active">
+        <!-- Forzamos de forma nativa la división del título en dos líneas independientes -->
+<h1 class="agency-title" style="text-align: center;">DÍAS EN<br>ACTIVO</h1>
+
+
+<!-- PANEL DE CONTROL ORBITAL (Nodos y ruedas en posición absoluta) -->
+        <div class="tactical-radar-zone">
+            
+            <!-- CONTENEDOR CENTRAL MAESTRO (NÚCLEO AZUL) -->
+            <div class="canvas-container">
+                <img src="Imágenes/circulo dias.png" alt="Casi Círculo Neón" class="neon-circle-img">
+                <span class="streak-counter" id="active-streak-number">0</span>
+                
+                <!-- ESFERA AMARILLO NEÓN (Orbitando abajo a la izquierda) -->
+                <div class="radar-node neon-node-yellow" onclick="abrirRankingVengadores()">
+                    <div class="inner-core-yellow"></div>
+                </div>
+
+                <!-- RUEDA ROSA NEÓN ESPEJADA (SINCRONIZA PASOS AL HACER CLICK) -->
+                <div class="mini-canvas-pink" onclick="sincronizarPasosPulseraManual()" style="cursor: pointer;">
+                    <img src="Imágenes/circulo dias.png" alt="Casi Círculo Neón Espejado" class="neon-circle-img pink-mirrored-rotated">
+                    <span class="streak-counter mini-counter" id="pink-steps-number">0</span>
+                </div>
+            </div>
+
+        </div>
+
+        </div>
+
+        <!-- MODAL FLOTANTE: REGISTRO DE RÁNKING DE LOS VENGADORES -->
+        <div id="vengadores-modal-overlay" class="modal-overlay">
+            <div class="tactical-modal" style="max-height: 85vh; overflow-y: auto;">
+                <div class="modal-title" style="color: #ffcc00; text-shadow: 0 0 8px rgba(255, 204, 0, 0.4);">RATING DE COMBATE: VENGADORES</div>
+                <p style="font-size: 0.65rem; color: #666; text-align: center; margin-bottom: 10px;">Estatus actual basado en sus días operativos consolidados</p>
+                
+                <div class="tactical-divider" style="margin: 5px 0 15px 0; background-color: #ffcc00;"></div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; font-family: sans-serif !important;" id="vengadores-list-container">
+                    <!-- El script inyectará aquí los niveles iluminando tu rango actual -->
+                </div>
+
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button class="action-btn deploy-btn" onclick="cerrarRankingVengadores()" style="width: 100%; border-color: #ffcc00; color: #ffcc00;">REGRESAR AL MONITOR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOCADILLO DE DIÁLOGO DE JARVIS (GRIS) -->
+        <div class="jarvis-speech-bubble">
+            <img src="Imágenes/jarvis.png" alt="Ondas" class="bubble-icon">
+            <p class="bubble-text">J.A.R.V.I.S.: "Sistemas listos, Agente. Iniciando patrulla."</p>
+        </div>
+    </section>
+    <!-- ==========================================================================
+       PANTALLA 3: TERMINAL DE J.A.R.V.I.S. (Oculta por defecto)
+       ========================================================================== -->
+       <section id="screen-jarvis" class="app-screen">
+        
+        <!-- AVATAR HOLOGRÁFICO SUPERIOR -->
+        <div class="jarvis-avatar-zone">
+            <!-- Pon aquí tu dibujo de las ondas o esfera concéntrica de Jarvis -->
+            <img src="Imágenes/jarvis.png" alt="Núcleo J.A.R.V.I.S." class="jarvis-core-pulse">
+        </div>
+
+        <!-- VENTANA DE TRANSMISIÓN TÁCTICA (ZONA DE MENSAJES CON SCROLL) -->
+        <div class="chat-transmission-feed" id="chat-messages-container">
+
+        </div>
+
+        <!-- LÍNEA DE COMANDOS DE ENTRADA (CORTADA EN MAYÚSCULAS) -->
+        <div class="command-input-zone">
+            <input type="text" id="jarvis-user-input" placeholder="INTRODUZCA COMANDO O CONSULTA..." autocomplete="off">
+            <button class="send-command-btn" onclick="enviarMensajeAAgencia()">ENVIAR</button>
+        </div>
+
+    </section>
+
+<!-- ==========================================================================
+       PANTALLA 2: MISIONES ACTIVAS (ESTRUCTURA DE TRES PISOS COMPACTA)
+       ========================================================================== -->
+    <section id="screen-misiones" class="app-screen">
+        
+        <!-- PISO 1: CABECERA TÁCTICA FIJA ARRIBA (Modificado a dos líneas) -->
+        <div class="mission-header-zone" style="margin-top: 20px; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 5px;">
+            <h1 class="agency-title" style="text-align: left; line-height: 1.2; margin: 0;">MISIONES<br>ACTIVAS</h1>
+            <button class="config-trigger-btn" onclick="abrirConfigMisiones()">
+                <img src="Imágenes/config-icono.png" alt="Catálogo" class="config-icon-img">
+            </button>
+        </div>
+
+        <!-- PISO 2: ZONA DE SCROLL CON EFECTO TIKTOK (Ejercicios y Retos rosas fluyen aquí) -->
+        <div class="scroll-mission-zone">
+            <!-- JavaScript inyectará aquí los 6 ejercicios base o la tarjeta de descanso -->
+        </div>
+
+        <!-- PISO 3: CONTENEDOR EXCLUSIVO PARA EL BOTÓN (Fijo abajo, fuera del scroll) -->
+        <div id="misiones-botonera-fija" style="width: 100%;"></div>
+    </section>
+
+
+    <!-- PANEL FLOTANTE: CATÁLOGO DE MISIONES DE S.H.I.E.L.D. (SÓLO FROG STAND) -->
+    <div id="mission-modal-overlay" class="modal-overlay">
+        <div class="tactical-modal" style="max-height: 80vh; overflow-y: auto;">
+            <div class="modal-title">CATALOGO DE DIRECTRIZ OPERATIVA</div>
+            <p style="font-size: 0.65rem; color: #666; text-align: center; margin-bottom: 10px;">Active o desactive las misiones opcionales para su despliegue semanal</p>
+            
+            <div class="tactical-divider" style="margin: 5px 0 15px 0;"></div>
+
+            <!-- INVENTARIO FILTRADO: ÚNICAMENTE LA FROG STAND -->
+            <div style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+                
+                <div style="background-color: #121212; padding: 12px; border-radius: 8px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <span style="font-size: 0.8rem; color: #ffffff;">NUCLEO FROG STAND</span>
+                        <span style="font-size: 0.65rem; color: #2288ff;">MUNECAS Y EQUILIBRIO • 3X15S</span>
+                    </div>
+                    <button class="type-btn" id="btn-catalog-frog" onclick="toggleMisionCatalogo('mision-frog')" style="padding: 6px 12px; max-width: 90px;">DESPLEGAR</button>
+                </div>
+
+            </div>
+
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="action-btn deploy-btn" onclick="cerrarConfigMisiones()" style="width: 100%;">CERRAR ARCHIVOS</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==========================================================================
+       PANEL FLOTANTE: DETALLES DE DIRECTRIZ (FICHA TÉCNICA)
+       ========================================================================== -->
+    <div id="details-modal-overlay" class="modal-overlay">
+        <div class="tactical-modal" style="border-color: #2288ff;">
+            <div class="modal-title" id="details-project-tag">[FICHA TÉCNICA DE PROYECTO]</div>
+            
+            <h2 id="details-mission-name" style="font-size: 1.3rem; text-align: center; margin: 10px 0;">PROYECTO</h2>
+            
+            <div class="input-group" style="background-color: #121212; padding: 15px; border-radius: 8px; border: 1px solid #333;">
+                <p style="font-size: 0.75rem; color: #666; letter-spacing: 1px; margin-bottom: 5px;">REQUISITOS DE RENDIMIENTO</p>
+                <p id="details-mission-reps" style="font-family: sans-serif !important; font-size: 1.1rem; color: #2288ff; font-weight: bold; margin-bottom: 15px;">3 SERIES - 8 REPS</p>
+                
+                <p style="font-size: 0.75rem; color: #666; letter-spacing: 1px; margin-bottom: 5px;">ESPECIFICACIONES TÁCTICAS</p>
+                <p id="details-mission-desc" style="font-family: sans-serif !important; font-size: 0.85rem; color: #ccc; line-height: 1.4; text-align: justify;"></p>
+            </div>
+
+            <div class="modal-actions">
+                <button class="action-btn cancel-btn" id="delete-mission-btn" style="color: #ff3333; border-color: rgba(255,51,51,0.3); display: none;">DAR DE BAJA</button>
+                <button class="action-btn deploy-btn" onclick="cerrarDetallesMision()">ENTENDIDO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       BARRA DE NAVEGACIÓN INFERIOR
+       ========================================================================== -->
+    <nav class="bottom-navigation">
+        <button class="nav-slot active" onclick="cambiarPantalla('screen-activo', this)">
+            <img src="Imágenes/dea.png" alt="Días en Activo">
+        </button>
+        <button class="nav-slot" onclick="cambiarPantalla('screen-jarvis', this)">
+            <img src="Imágenes/jarvis.png" alt="Chat Jarvis">
+        </button>
+        <button class="nav-slot" onclick="cambiarPantalla('screen-misiones', this)">
+            <img src="Imágenes/misiones.png" alt="Misiones">
+        </button>
+    </nav>
+
+    <script src="app.js"></script>
+</body>
+</html>
