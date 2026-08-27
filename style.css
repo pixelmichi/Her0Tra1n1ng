@@ -727,3 +727,90 @@ div:has(#jarvis-user-input) {
     position: relative !important;
     bottom: 0px !important;
 }
+/* ==========================================================================
+   REPARACIÓN DE ALTURA ELASTICA: CHAT J.A.R.V.I.S.
+   ========================================================================== */
+
+/* 1. Forzamos a la pantalla de Jarvis a ser un contenedor flexible completo */
+#screen-jarvis.active {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100vh - 120px) !important; 
+    box-sizing: border-box;
+    padding: 10px 15px;
+}
+
+/* 2. Cambiamos la altura fija de 240px por flex: 1 para que ocupe todo el hueco */
+.chat-transmission-feed {
+    width: 100% !important;
+    flex: 1 !important; 
+    height: auto !important; 
+    overflow-y: auto !important; 
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding-right: 5px !important;
+    margin-bottom: 15px !important;
+}
+
+/* 3. Aseguramos que la zona de escribir se mantenga firme abajo del todo */
+.command-input-zone {
+    width: 100% !important;
+    display: flex !important;
+    gap: 10px !important;
+    margin-top: auto !important; 
+    margin-bottom: 10px !important; 
+}
+/* ==========================================================================
+   RECALIBRACIÓN TÁCTICA: BOTÓN DE ENVÍO Y OCULTAR SCROLLBAR
+   ========================================================================== */
+
+/* 1. Forzamos un colchón debajo de la zona de misiones para que respire sobre el botón */
+.scroll-mission-zone {
+    padding-bottom: 10px !important;
+}
+
+/* 2. OCULTAR LA BARRA DE DESPLAZAMIENTO VISUAL (Mantiene el scroll táctil) */
+.scroll-mission-zone::-webkit-scrollbar {
+    display: none !important; /* Oculta la barra en Chrome, Safari y navegadores móviles */
+}
+.scroll-mission-zone {
+    -ms-overflow-style: none !important;  /* Oculta la barra en Internet Explorer/Edge */
+    scrollbar-width: none !important;  /* Oculta la barra en Firefox */
+}
+
+/* 3. COLOCAR EL BOTÓN FIJO EN SU SITIO JUSTO ENCIMA DE LOS ICONOS */
+#misiones-botonera-fija button, 
+#misiones-botonera-fija .action-btn.deploy-btn {
+    margin-top: 10px !important;     /* Separación controlada con las tarjetas de arriba */
+    margin-bottom: -10px !important;   /* Ajuste milimétrico sobre la línea gris de navegación */
+    position: relative !important;
+    z-index: 5 !important;
+}
+
+/* 4. Aseguramos que la barra de navegación no empuje el botón de más */
+.bottom-navigation {
+    margin-top: 0 !important;
+    padding-top: 10px !important;
+}
+/* ==========================================================================
+   ANIMACIÓN HOLOGRÁFICA: BOCADILLO FLOTANTE DE J.A.R.V.I.S.
+   ========================================================================== */
+
+/* 1. Vinculamos la animación de levitación al bocadillo gris */
+.jarvis-speech-bubble {
+    animation: flotarBocadilloJarvis 3.5s infinite ease-in-out !important;
+}
+
+/* 2. Diseñamos el muelle de movimiento (solo 6 píxeles de recorrido para que sea sutil) */
+@keyframes flotarBocadilloJarvis {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px); /* 🚀 Sube suavemente 6 píxeles */
+    }
+    100% {
+        transform: translateY(0);
+    }
+}

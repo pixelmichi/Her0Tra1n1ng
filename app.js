@@ -80,16 +80,6 @@ window.addEventListener('load', () => {
     actualizarPasosVisuales(); 
     cargarMisionesDeBaseDatos();
     controlarMisionesAleatoriasDiarias();
-    
-    // DETONADOR AUTOMÁTICO REPARADO: Ejecuta el onboarding o lo salta si ya hay registro
-    if (localStorage.getItem('shield_rango_identidad')) {
-        const overlay = document.getElementById('onboarding-overlay');
-        if (overlay) overlay.remove(); 
-    } else {
-        setTimeout(() => {
-            ejecutarFaseTutorialLetraALetra(1);
-        }, 1000);
-    }
 });
 
 function actualizarMarcadorVisualDias() {
@@ -109,7 +99,7 @@ function actualizarPasosVisuales() {
 }
 
 function sincronizarPasosPulseraManual() {
-    const entrada = prompt("CONEXIÓN PULSERA: Introduzca el conteo de pasos actual:", localStorage.getItem('shield_pasos_hoy'));
+    const entrada = prompt("CONEXIÓN PULSERA: Introduzca el conteo de pasos actual detectado por su pulsera de actividad:", localStorage.getItem('shield_pasos_hoy'));
     if (entrada !== null) {
         const pasosNum = parseInt(entrada) || 0;
         if (pasosNum >= 0) {
@@ -166,7 +156,7 @@ function actualizarBotonesCatalogoVisual() {
 }
 
 // ==========================================================================
-// 4. CONTROL DE VISUALIZACIÓN DE MISIONES
+// 4. CONTROL DE VISUALIZACIÓN DE MISIONES AUTOMÁTICO (DÍA SÍ, DÍA NO)
 // ==========================================================================
 function cargarMisionesDeBaseDatos() {
     const zone = document.querySelector('.scroll-mission-zone');
@@ -177,19 +167,34 @@ function cargarMisionesDeBaseDatos() {
     zone.innerHTML = "";         
     botoneraFija.innerHTML = ""; 
     
-    const hoyStr = new Date().toDateString();
-    const yaConsolidadoHoy = localStorage.getItem('shield_ultima_fecha_consolidada') === hoyStr;
+    const marcaTiempoGuardada = localStorage.getItem('shield_ultima_fecha_consolidada');
+    let estadoJornada = "ENTRENAR"; 
 
-    if (yaConsolidadoHoy) {
-        botoneraFija.innerHTML = `<p style="font-family: sans-serif !important; font-size: 0.85rem; color: #00ff66; text-shadow: 0 0 8px rgba(0, 255, 102, 0.4); text-align: center; font-weight: bold; margin-bottom: 25px; width: 100%;">INFORME DIARIO COMPLETADO</p>`;
-        return; 
+    if (marcaTiempoGuardada) {
+        const momentoEnvio = new Date(parseInt(marcaTiempoGuardada));
+        const ahora = new Date();
+
+        const mañanaInicio = new Date(momentoEnvio);
+        mañanaInicio.setDate(momentoEnvio.getDate() + 1);
+        mañanaInicio.setHours(0, 0, 0, 0);
+
+        const pasadoMañanaDesbloqueo = new Date(momentoEnvio);
+        pasadoMañanaDesbloqueo.setDate(momentoEnvio.getDate() + 2);
+        pasadoMañanaDesbloqueo.setHours(0, 0, 0, 0);
+
+        if (ahora.toDateString() === momentoEnvio.toDateString()) {
+            estadoJornada = "COMPLETADO"; 
+        } else if (ahora >= mañanaInicio && ahora < pasadoMañanaDesbloqueo) {
+            estadoJornada = "DESCANSO"; 
+        }
     }
 
-    const fecha = new Date();
-    const diaSemana = fecha.getDay();
-    const esDiaDeEntreno = (diaSemana === 1 || diaSemana === 3 || diaSemana === 5);
+    if (estadoJornada === "COMPLETADO") {
+        botoneraFija.innerHTML = `<p style="font-family: sans-serif !important; font-size: 0.85rem; color: #00ff66; text-shadow: 0 0 8px rgba(0, 255, 102, 0.4); text-align: center; font-weight: bold; margin-bottom: 25px; width: 100%;">INFORME DIARIO COMPLETADO</p>`;
+        return;
+    }
 
-    if (esDiaDeEntreno) {
+    if (estadoJornada === "ENTRENAR") {
         let misiones = JSON.parse(localStorage.getItem('shield_misiones')) || [];
         misiones.forEach(mision => {
             const nuevaTarjeta = document.createElement('div');
@@ -236,7 +241,9 @@ function cargarMisionesDeBaseDatos() {
                 <p style="font-size: 0.95rem; color: #ffffff; margin: 0; font-weight: bold; text-transform: uppercase;">FASE OPERATIVA: DESCANSO OBLIGATORIO</p>
                 <div class="tactical-divider" style="margin: 5px 0 8px 0; background-color: #225588;"></div>
                 <p style="font-family: sans-serif !important; font-size: 0.8rem; color: #aaaaaa; line-height: 1.4; margin: 0;">
-                    Directriz de la agencia: Sus microfibras musculares requieren un ciclo completo de 24 horas para absorber la sobrecarga estructural...
+                    Directriz de la agencia: Sus microfibras musculares requieren un ciclo completo de 24 horas para absorber la sobrecarga estructural de calistenia y evitar fallos mecánicos.
+                    <br><br>
+                    Las misiones de fuerza permanecen bloqueadas bajo llave por orden de JARVIS. Su única directriz autorizada para hoy es el gasto calórico encubierto registrado en su pulsera. Descanse, Agente.
                 </p>
             </div>
         `;
@@ -245,7 +252,7 @@ function cargarMisionesDeBaseDatos() {
 }
 
 // ==========================================================================
-// 5. FICHA TÉCNICA INDIVIDUAL
+// 5. SISTEMA DE DETALLES TÉCNICOS (FICHA INDIVIDUAL)
 // ==========================================================================
 function abrirDetallesMision(idMision) {
     let misiones = JSON.parse(localStorage.getItem('shield_misiones')) || [];
@@ -254,7 +261,7 @@ function abrirDetallesMision(idMision) {
     if (mision) {
         document.getElementById('details-mission-name').textContent = mision.nombre;
         if (mision.series && mision.series > 0) {
-            const unidad = ["mision-core", "mision-frog"].includes(idMision) ? "SEGUNDOS" : "REPETICIONES";
+            const unidad = idMision === "mision-core" || idMision === "mision-frog" ? "SEGUNDOS" : "REPETICIONES";
             document.getElementById('details-mission-reps').textContent = `${mision.series} SERIES x ${mision.reps} ${unidad}`;
         } else {
             document.getElementById('details-mission-reps').textContent = "FASE OPERATIVA RECREATIVA";
@@ -276,7 +283,7 @@ function abrirDetallesMision(idMision) {
 }
 
 // ==========================================================================
-// 6. CONTROLADORES DE CHECKS Y VALIDACIÓN DE JORNADA
+// 6. CONTROLADORES DE CHECKS Y EVALUACIÓN MATEMÁTICA DE JORNADA
 // ==========================================================================
 function toggleCheckDinámica(idMision) {
     const tarjeta = document.getElementById(idMision);
@@ -304,15 +311,7 @@ function confirmarYEnviarResultadosSHIELD() {
     const calisteniaOk = ejerciciosObligatorios.every(m => m.completada === true);
 
     if (!pasosOk || !calisteniaOk) {
-        alert("ACCESO DENEGADO: Informes incompletos. Registre un mínimo de 8000 pasos en su pulsera y marque sus misiones obligatorias.");
-        return;
-    }
-
-    const hoy = new Date().toDateString();
-    const ultimaFechaConsolidada = localStorage.getItem('shield_ultima_fecha_consolidada');
-
-    if (hoy === ultimaFechaConsolidada) {
-        alert("INFORME YA PROCESADO.");
+        alert("ACCESO DENEGADO: Informes incompletos. Asegúrese de registrar un mínimo de 8000 pasos en su pulsera (rueda rosa) y marcar sus 6 proyectos base obligatorios de calistenia para validar la jornada.");
         return;
     }
 
@@ -320,18 +319,19 @@ function confirmarYEnviarResultadosSHIELD() {
     rachaActual += 1;
     
     localStorage.setItem('shield_dias_activo_streak', rachaActual.toString());
-    localStorage.setItem('shield_ultima_fecha_consolidada', hoy);
+    localStorage.setItem('shield_ultima_fecha_consolidada', new Date().getTime().toString());
     localStorage.setItem('shield_pasos_hoy', '0');
     
     actualizarPasosVisuales();
     actualizarMarcadorVisualDias();
     
-    alert("TRANSMISIÓN CONSOLIDADA. +1 Día en Activo.");
+    alert("TRANSMISIÓN CONSOLIDADA: Datos de la pulsera e informe de fuerza sincronizados con la central. +1 Día en Activo registrado, Agente.");
     
     const botoneraFija = document.getElementById('misiones-botonera-fija');
     if (botoneraFija) {
         botoneraFija.innerHTML = `<p style="font-family: sans-serif !important; font-size: 0.85rem; color: #00ff66; text-shadow: 0 0 8px rgba(0, 255, 102, 0.4); text-align: center; font-weight: bold; margin-bottom: 25px;">INFORME DIARIO COMPLETADO</p>`;
     }
+
     cargarMisionesDeBaseDatos();
 }
 
@@ -361,8 +361,8 @@ function controlarMisionesAleatoriasDiarias() {
             tMagentaLevelUp.id = "mision-level-up";
             tMagentaLevelUp.innerHTML = `
                 <div class="mission-info">
-                    <span class="mission-tag" style="color: #ff00aa;">[EVENTO: MEJORA]</span>
-                    <p class="mission-text">Suma +${levelUpDeHoy.incremento} ${unidad} a: ${misionAEvonlucionar.nombre}</p>
+                    <span class="mission-tag" style="color: #ff00aa;">[EVENTO: MEJORA DE REQUISITOS (LEVEL UP)]</span>
+                    <p class="mission-text">Suma +${levelUpDeHoy.incremento} ${unidad} a cada serie en: ${misionAEvonlucionar.nombre}</p>
                 </div>
                 <button class="custom-checkbox" onclick="toggleCheckLevelUp()"></button>
             `;
@@ -373,9 +373,10 @@ function controlarMisionesAleatoriasDiarias() {
         const indiceR = (fecha.getDate() + fecha.getMonth()) % baseDeRetosJarvis.length;
         const tMagentaReto = document.createElement('div');
         tMagentaReto.className = "mission-card random-magenta";
+        tMagentaReto.id = "mision-reto-tactico-diario";
         tMagentaReto.innerHTML = `
             <div class="mission-info">
-                <span class="mission-tag" style="color: #ff00aa;">[RETO DIARIO]</span>
+                <span class="mission-tag" style="color: #ff00aa;">[EVENTO DIARIO: RETO VARIADO]</span>
                 <p class="mission-text">${baseDeRetosJarvis[indiceR]}</p>
             </div>
             <button class="custom-checkbox" onclick="this.parentNode.classList.toggle('checked-active')"></button>
@@ -459,18 +460,24 @@ async function enviarMensajeAAgencia() {
     contenedorFeed.scrollTop = contenedorFeed.scrollHeight;
 
     try {
+        const rangoGuardado = localStorage.getItem('shield_rango_identidad') || 'AGENTE';
+        let tratamiento = "Agente.";
+        if (rangoGuardado === "SEÑORITA") tratamiento = "Señorita.";
+        if (rangoGuardado === "SEÑOR") tratamiento = "Señor.";
+
         const horaActual = new Date().getHours();
-        let saludoHorario = "Buenos días, Señorita.";
-        if (horaActual >= 14 && horaActual < 21) saludoHorario = "Buenas tardes, Agente.";
-        if (horaActual >= 21 || horaActual < 6) saludoHorario = "Buenas noches, Señorita.";
+        let saludoHorario = `Buenos días, ${tratamiento}`;
+        if (horaActual >= 14 && horaActual < 21) saludoHorario = `Buenas tardes, ${tratamiento}`;
+        if (horaActual >= 21 || horaActual < 6) saludoHorario = `Buenas noches, ${tratamiento}`;
 
         let instruccionSaludadores = jarvisYaHaSaludadoHoy 
             ? "Está PROHIBIDO incluir saludos de bienvenida. Ve directo al grano." 
             : `Es OBLIGATORIO que empieces saludando exactamente así: "${saludoHorario}".`;
 
-        const directrizSistema = `Eres J.A.R.V.I.S. Trata a la usuaria de usted como Señorita o Agente. Corto, conciso, máximo 3 líneas con saltos físicos. ${instruccionSaludadores}`;
+        const directrizSistema = `Eres J.A.R.V.I.S. Trata a la usuaria de usted como ${rangoGuardado}. Corto, conciso, máximo 3 líneas con saltos físicos. ${instruccionSaludadores}`;
 
         const urlAPI = "https://ngsgddbvhoakaoznffoa.supabase.co/functions/v1/jarvis-brain";
+        
         const respuestaWeb = await fetch(urlAPI, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -480,9 +487,8 @@ async function enviarMensajeAAgencia() {
         const datosRespuesta = await respuestaWeb.json();
         bloqueCarga.remove();
 
-        // REPARADO PARSEO DE RESPUESTA DE SUPABASE (choices[0].message en lugar de choices.message)
-        if (datosRespuesta.choices && datosRespuesta.choices[0] && datosRespuesta.choices[0].message) {
-            const respuestaIA = datosRespuesta.choices[0].message.content.trim();
+        if (datosRespuesta.choices && datosRespuesta.choices && datosRespuesta.choices.message) {
+            const respuestaIA = datosRespuesta.choices.message.content.trim();
             inyectarBloqueChat('J.A.R.V.I.S.', respuestaIA, 'jarvis-msg');
             jarvisYaHaSaludadoHoy = true;
         }
@@ -525,22 +531,40 @@ function reconstruirChatEstiloWhatsApp() {
 }
 
 // ==========================================================================
-// 8. ANIMACIÓN DE ONBOARDING TUTORIAL
+// 8. CONTROLADOR DE LA CINEMÁTICA DE INTRODUCCIÓN (MECÁNICA DE ONBOARDING)
 // ==========================================================================
+window.addEventListener('load', () => {
+    if (localStorage.getItem('shield_rango_identidad')) {
+        const overlay = document.getElementById('onboarding-overlay');
+        if (overlay) overlay.remove(); 
+        return;
+    }
+
+    setTimeout(() => {
+        ejecutarFaseTutorialLetraALetra(1);
+    }, 1000); 
+});
+
 const dialogosOnboardingJarvis = {
-    1: "Buenos días. Soy J.A.R.V.I.S...\n\nIniciando diagnóstico de la interfaz gráfica...",
-    2: "Calibración completada.\n\nDispone de su Núcleo de Energía para registrar las jornadas.",
-    3: "Para finalizar el enlace cuántico, elija su credencial operativa:"
+    1: "Buenos días. Soy J.A.R.V.I.S., su asistente de inteligencia artificial integrado en este datapad táctico de S.H.I.E.L.D.\n\nIniciando diagnóstico de la interfaz gráfica... Detectando módulos de actividad semanal en la base de datos central.",
+    2: "Calibración completada.\n\nLe recuerdo que en la sección izquierda dispone de su Núcleo de Energía para registrar las jornadas en activo. El panel de la derecha contiene sus misiones de fuerza y órbita balística.",
+    3: "Para finalizar el enlace cuántico y archivar sus informes oficiales en la base de datos de Industrias Stark, necesito calibrar mis registros de voz operacionales.\n\n¿Bajo qué credencial de identidad desea que me dirija a usted durante los despliegues tácticos?"
 };
 
 function ejecutarFaseTutorialLetraALetra(fase) {
     const cajaTexto = document.getElementById('onboarding-text-box');
     const zonaBotones = document.getElementById('onboarding-buttons-zone');
+    const cabeceraTitulo = document.getElementById('onboarding-header');
+    
     if (!cajaTexto || !zonaBotones) return;
 
     zonaBotones.style.display = "none";
     zonaBotones.innerHTML = "";
     
+    if (cabeceraTitulo) {
+        cabeceraTitulo.textContent = fase === 3 ? "SELECCIÓN DE CREDENCIALES" : "TRANSMISIÓN J.A.R.V.I.S.";
+    }
+
     let textoCompleto = dialogosOnboardingJarvis[fase];
     let contadorLetras = 0;
     cajaTexto.textContent = ""; 
@@ -548,29 +572,44 @@ function ejecutarFaseTutorialLetraALetra(fase) {
     const temporizadorLetras = setInterval(() => {
         cajaTexto.textContent += textoCompleto.charAt(contadorLetras);
         contadorLetras++;
+
         if (contadorLetras >= textoCompleto.length) {
             clearInterval(temporizadorLetras);
             desplegarControlesDeFase(fase, zonaBotones);
         }
-    }, 15);
+    }, 15); 
 }
 
 function desplegarControlesDeFase(fase, contenedorBotones) {
     contenedorBotones.style.display = "flex";
+
     if (fase === 1 || fase === 2) {
         const btnSiguiente = document.createElement('button');
         btnSiguiente.className = "action-btn deploy-btn";
-        btnSiguiente.textContent = "ENTENDIDO";
-        btnSiguiente.onclick = () => ejecutarFaseTutorialLetraALetra(fase + 1);
+        btnSiguiente.style.width = "100%";
+        btnSiguiente.textContent = fase === 1 ? "ANALIZAR INTERFAZ" : "ENTENDIDO";
+        btnSiguiente.onclick = () => {
+            ejecutarFaseTutorialLetraALetra(fase + 1);
+        };
         contenedorBotones.appendChild(btnSiguiente);
-    } else {
-        ["SEÑORITA", "SEÑOR", "AGENTE"].forEach(rango => {
+    } 
+    else if (fase === 3) {
+        const rangosDisponibles = ["SEÑORITA", "SEÑOR", "AGENTE"];
+        
+        rangosDisponibles.forEach(rango => {
             const btnRango = document.createElement('button');
             btnRango.className = "identity-select-btn";
             btnRango.textContent = rango;
             btnRango.onclick = () => {
                 localStorage.setItem('shield_rango_identidad', rango);
-                document.getElementById('onboarding-overlay').classList.add('hidden');
+                const overlayElemento = document.getElementById('onboarding-overlay');
+                if (overlayElemento) {
+                    overlayElemento.classList.add('hidden');
+                    setTimeout(() => {
+                        overlayElemento.remove();
+                        alert("Enlace cuántico establecido. Bienvenida a la terminal, " + rango + ".");
+                    }, 500);
+                }
             };
             contenedorBotones.appendChild(btnRango);
         });
@@ -578,18 +617,21 @@ function desplegarControlesDeFase(fase, contenedorBotones) {
 }
 
 // ==========================================================================
-// 9. RÁNKING DE LOS VENGADORES
+// 9. SISTEMA DE CLASIFICACIÓN DE COMBATE: RÁNKING DE LOS VENGADORES
 // ==========================================================================
 const escalafonVengadoresStark = [
     { diasRequeridos: 0, nombre: "STEVE ROGERS (PRE-SUERO)", clave: "Nivel Inicial" },
-    { diasRequeridos: 3, nombre: "AGENTE DE CAMPO", clave: "Rango S.H.I.E.L.D." },
-    { diasRequeridos: 7, nombre: "BLACK WIDOW", clave: "Nivel Vengador" },
-    { diasRequeridos: 14, nombre: "TONY STARK", clave: "Núcleo Activo" }
+    { diasRequeridos: 3, nombre: "AGENTE DE CAMPO (Infiltración)", clave: "Rango S.H.I.E.L.D." },
+    { diasRequeridos: 7, nombre: "BLACK WIDOW (Combate táctico)", clave: "Nivel Vengador" },
+    { diasRequeridos: 14, nombre: "TONY STARK (Fase de Armadura)", clave: "Núcleo Activo" },
+    { diasRequeridos: 21, nombre: "CAPITÁN AMÉRICA (Súper Soldado)", clave: "Líder de Campo" },
+    { diasRequeridos: 30, nombre: "THOR ODINSON (Fuerza del Trueno)", clave: "Estatus Dios" }
 ];
 
 function abrirRankingVengadores() {
     const modal = document.getElementById('vengadores-modal-overlay');
     const contenedorLista = document.getElementById('vengadores-list-container');
+    
     if (!modal || !contenedorLista) return;
     
     const rachaActual = parseInt(localStorage.getItem('shield_dias_activo_streak')) || 0;
@@ -598,13 +640,33 @@ function abrirRankingVengadores() {
     escalafonVengadoresStark.forEach(rango => {
         const esRangoActual = rachaActual >= rango.diasRequeridos;
         const filaHtml = document.createElement('div');
-        filaHtml.innerHTML = `<span>${rango.nombre}</span> - <b>${rango.diasRequeridos} DÍAS</b>`;
+        
+        filaHtml.style.display = "flex";
+        filaHtml.style.justify = "space-between";
+        filaHtml.style.alignItems = "center";
+        filaHtml.style.padding = "8px 4px";
+        filaHtml.style.borderBottom = "1px solid #222";
+        filaHtml.style.color = esRangoActual ? "#ffcc00" : "#444";
+        
+        filaHtml.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-size: 0.8rem; font-weight: bold;">${esRangoActual ? '⭐' : '🔒'} ${rango.nombre}</span>
+                <span style="font-size: 0.65rem; color: ${esRangoActual ? '#ffcc00' : '#555'};">${rango.clave}</span>
+            </div>
+            <span style="font-size: 0.75rem; font-weight: bold;">${rango.diasRequeridos} DÍAS</span>
+        `;
         contenedorLista.appendChild(filaHtml);
     });
+
     modal.classList.add('open');
 }
 
-// Vinculaciones obligatorias al objeto global
+function cerrarRankingVengadores() {
+    const modal = document.getElementById('vengadores-modal-overlay');
+    if (modal) modal.classList.remove('open');
+}
+
+// Vinculaciones obligatorias al objeto global window para asegurar la ejecución HTML
 window.cambiarPantalla = cambiarPantalla;
 window.toggleCheckDinámica = toggleCheckDinámica;
 window.confirmarYEnviarResultadosSHIELD = confirmarYEnviarResultadosSHIELD;

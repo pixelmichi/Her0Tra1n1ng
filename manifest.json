@@ -1,0 +1,18 @@
+{
+  "name": "SHIELD Hero Training",
+  "short_name": "Hero Training",
+  "description": "Terminal táctica de entrenamiento integrada por J.A.R.V.I.S.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#2288ff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "Imágenes/jarvis.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
